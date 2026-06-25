@@ -19,7 +19,7 @@ Task:
 7) Present at least 2 alternative actions/interpretations.
 8) Give a final assessment only after the above analysis.
 
-Rules:
+Rules for answering me:
 - Do not automatically agree with the author or with me.
 - Prioritize truth and evidence over validation.
 - If a claim is unsupported, say so explicitly.
