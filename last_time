@@ -1,0 +1,654 @@
+Feasibility-Objective Switching
+加上
+Cardinality Control of B
+即證明：
+∣B∣≥N/2.|B|
+\ge
+N/2.∣B∣≥N/2.
+這是整篇論文最關鍵想法。I wanna know how important this thought is;沒有已知 SA 方法能同時：
+保證 optimality gap
+保證 feasibility gap
+又不需要 dual variableI also wanna ask if there's some cases this thesis or latest papers didn't include & I can consider as the theme of my thesis (not yet planned)
+
+`````````````````````````````````````````````
+這兩個問題其實非常有研究味道，而且我覺得你已經開始在用 PhD applicant 的角度思考，而不只是「讀懂定理」的角度。
+
+***
+
+# 第一部分：
+
+# Feasibility-Objective Switching + Cardinality Control of B 到底有多重要？
+
+先說結論：
+
+> **在 optimization history 裡不算革命性思想，但在這篇 paper 裡是核心創新。**
+
+我會給它：
+
+* 在本論文內：9.5/10
+* 在整個優化領域歷史：6/10
+
+***
+
+## 為什麼這篇論文靠它活著？
+
+傳統 SA：
+
+$$
+x_{k+1}=P_X(x_k-\gamma_k g_k)
+$$
+
+通常假設：
+
+$$
+X=\{x:g(x)\le 0\}
+$$
+
+可以直接投影。
+
+但作者遇到問題：
+
+$$
+g(x)=E[G(x,\xi)]
+$$
+
+你根本不知道真正的 feasible set。
+
+所以：
+
+$$
+P_{\{g(x)\le0\}}
+$$
+
+做不了。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+於是作者換思路：
+
+不要投影。
+
+改成：
+
+如果 infeasible
+
+$$
+g(x_k)>\eta_k
+$$
+
+就往 constraint 的 subgradient 走。
+
+如果 feasible
+
+$$
+g(x_k)\le \eta_k
+$$
+
+就往 objective 的 subgradient 走。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+這其實很像一個極簡版的 control system：
+
+```
+Constraint violated?
+    Yes --> Repair feasibility
+    No  --> Improve objective
+```
+
+***
+
+真正困難的不是想到這件事。
+
+而是證明：
+
+這樣做不會永遠在修 constraint。
+
+也不會永遠在修 objective。
+
+***
+
+作者引入
+
+$$
+B
+=
+\{k:\hat G_k\le \eta_k\}
+$$
+
+即：
+
+「被判定為可行」的 iteration。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+然後證明：
+
+$$
+|B|
+\ge
+N/2.
+$$
+
+(至少一半迭代在優化 objective。) [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+這就是整篇 paper 最漂亮的地方。
+
+因為：
+
+如果沒有這個結果，
+
+$$
+|B|=3
+$$
+
+都可能發生。
+
+那麼最後 averaging
+
+$$
+\bar x
+=
+\frac{\sum_{k\in B}\gamma_kx_k}
+{\sum_{k\in B}\gamma_k}
+$$
+
+完全沒有意義。
+
+***
+
+所以邏輯是：
+
+```
+Switching
+   ↓
+Define B
+   ↓
+Control |B|
+   ↓
+Enough objective updates
+   ↓
+Jensen averaging
+   ↓
+Complexity bound
+```
+
+整個 proof chain 都綁在這件事上。
+
+***
+
+# 更深一層看
+
+其實這個想法是一種：
+
+## Implicit Dual Control
+
+作者說：
+
+> 我不用 dual variable
+
+這是正確的。
+
+但我會加一句：
+
+> 他其實偷偷在做 dual control。
+
+***
+
+傳統 primal-dual：
+
+$$
+\lambda_k
+$$
+
+控制你要多重視 constraint。
+
+例如：
+
+$$
+f(x)+\lambda g(x).
+$$
+
+***
+
+CSA 沒有
+
+$$
+\lambda_k
+$$
+
+但有一個 binary switch：
+
+$$
+I_k=
+\begin{cases}
+1,&g(x_k)> \eta_k\\
+0,&g(x_k)\le\eta_k
+\end{cases}
+$$
+
+這其實像一個極端版 dual variable。
+
+相當於：
+
+$$
+\lambda \in \{0,\infty\}.
+$$
+
+***
+
+從研究角度看，
+
+最大的 insight 其實是：
+
+> Constraint handling 不一定要靠 dual variable。
+
+這點很值得記住。
+
+***
+
+# 第二部分
+
+# 「沒有 dual variable 還同時保 optimality+feasibility」有多厲害？
+
+老實說：
+
+### 2016\~2020
+
+算相當漂亮。
+
+***
+
+因為當時主流是：
+
+### 方法1
+
+Penalty
+
+$$
+f(x)+\rho[g(x)]_+
+$$
+
+***
+
+問題：
+
+$$
+\rho
+$$
+
+很難選。
+
+***
+
+### 方法2
+
+Primal-Dual
+
+$$
+\min_x\max_{\lambda\ge0}
+f(x)+\lambda g(x)
+$$
+
+***
+
+問題：
+
+要同時更新
+
+$$
+x_k,\lambda_k
+$$
+
+理論複雜。
+
+***
+
+CSA：
+
+完全不要：
+
+$$
+\lambda_k.
+$$
+
+直接 primal-only。
+
+然後還拿到
+
+$$
+O(1/\epsilon^2)
+$$
+
+最優階數。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+在當年確實是值得發表的成果。
+
+***
+
+# 第三部分
+
+# 如果你未來做 thesis，有哪些自然缺口？
+
+這是我最推薦你看的部分。
+
+***
+
+# 方向1
+
+# Nonconvex CSA
+
+這是最自然的。
+
+論文全部：
+
+$$
+f,g
+$$
+
+convex。
+
+ [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+現在主流優化幾乎都在研究：
+
+$$
+\min f(x)
+$$
+
+其中
+
+$$
+f
+$$
+
+nonconvex。
+
+例如：
+
+* Deep Learning
+* Matrix Factorization
+* Representation Learning
+
+***
+
+問題：
+
+在 nonconvex 下，
+
+$$
+|B|\ge N/2
+$$
+
+還夠嗎？
+
+可能不夠。
+
+因為你不能再用：
+
+$$
+f(x_k)-f^*
+$$
+
+分析。
+
+必須改成
+
+$$
+E\|\nabla f(x)\|^2.
+$$
+
+***
+
+我認為這是最漂亮的 thesis 題目之一。
+
+***
+
+# 方向2
+
+# Variance Reduction CSA
+
+原文：
+
+$$
+O(1/\epsilon^2)
+$$
+
+因為是普通 SA。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+今天大家研究：
+
+* SVRG
+* SARAH
+* SPIDER
+* STORM
+
+***
+
+問題：
+
+能否把 CSA 結合：
+
+$$
+v_k
+$$
+
+variance-reduced estimator？
+
+***
+
+這能直接產生新論文。
+
+而且理論很有機會做得出來。
+
+***
+
+# 方向3
+
+# Multiple Constraints
+
+原文只有
+
+$$
+g(x)\le 0.
+$$
+
+ [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+現實世界：
+
+$$
+g_1(x)\le0
+$$
+
+$$
+g_2(x)\le0
+$$
+
+$$
+g_m(x)\le0
+$$
+
+***
+
+那麼：
+
+違反哪個 constraint？
+
+修哪個？
+
+***
+
+可能需要：
+
+$$
+g_{\max}(x)
+=
+\max_i g_i(x).
+$$
+
+或
+
+constraint sampling。
+
+***
+
+這是很自然的 extension。
+
+***
+
+# 方向4
+
+# Chance Constraints
+
+作者其實在 introduction 有提到 chance-constrained optimization。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+例如：
+
+$$
+P(G(x,\xi)\le0)
+\ge0.95.
+$$
+
+***
+
+這比 expectation constraint 更難。
+
+因為：
+
+$$
+P(\cdot)
+$$
+
+不可微。
+
+***
+
+很多金融、風控、能源問題都在做這個。
+
+***
+
+研究價值很高。
+
+***
+
+# 方向5
+
+# Heavy-Tailed Noise
+
+作者大量使用：
+
+$$
+E[\exp(X^2/c)]
+\le e
+$$
+
+light-tail assumption。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+但實際上：
+
+* finance
+* recommendation
+* online systems
+
+很多是 heavy-tail。
+
+***
+
+可以研究：
+
+* Median-of-Means CSA
+* Robust CSA
+* Catoni CSA
+
+***
+
+這是近年很熱的方向。
+
+***
+
+# 方向6（我最推薦）
+
+# Adaptive CSA
+
+原文步長：
+
+$$
+\gamma_k
+=
+O(1/\sqrt{k})
+$$
+
+或
+
+$$
+O(1/k).
+$$
+
+ [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+今天大家更在意：
+
+* AdaGrad
+* Adam
+* RMSProp
+
+***
+
+問題：
+
+能否把
+
+Feasibility Switching
+
+結合
+
+Adaptive Stepsize？
+
+***
+
+這個：
+
+* 不會太難
+* 可做理論
+* 可做實驗
+* 適合 MPhil
+
+我覺得是最現實的 thesis candidate。
+
+***
+
+# 如果我是未來你的 supervisor
+
+假設你是數學系大四、想申 MPhil。
+
+我會推薦潛力排名：
+
+1. Nonconvex CSA ★★★★★
+2. Variance-Reduced CSA ★★★★★
+3. Chance-Constrained CSA ★★★★☆
+4. Adaptive CSA ★★★★☆
+5. Multi-Constraint CSA ★★★★☆
+6. Heavy-Tail CSA ★★★★☆
+
+其中前兩個最像真正 research paper 的起點。
+
+而且有趣的是：
+
+這篇論文真正的新意（switching + cardinality control）其實非常容易被移植到這些方向，所以它很適合作為你未來 thesis 的「母論文」。讀懂 Lemma 3、Lemma 10 和強凸版本的 Lemma 14 之後，你就已經開始站在研究者的位置，而不是讀者的位置了。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
