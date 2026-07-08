@@ -1104,3 +1104,607 @@ $$
 > 「即使 lower problem 有多個最優解，我們仍然可以透過 solution-set geometry 去定義和研究 hypergradient。」
 
 這個想法的影響力，我認為遠大於它最後得到的 $$O(\varepsilon^{-5})$$ complexity。
+
+這三個問題其實是連在一起的，而且我認為你已經碰到這篇 paper 最深的部分了。
+
+***
+
+# 1. 如果 optimality 不存在，hypergradient 是否根本不存在？
+
+你的直覺其實接近正確，但還要更精確。
+
+先看最簡單情況：
+
+$$
+S(x)
+=
+\arg\min_y g(x,y).
+$$
+
+若
+
+$$
+S(x)=\{y^*(x)\}
+$$
+
+唯一。
+
+則
+
+$$
+\psi(x)=f(x,y^*(x))
+$$
+
+通常可以直接求
+
+$$
+\nabla \psi(x).
+$$
+
+這是 classical bilevel optimization.
+
+***
+
+但現在：
+
+$$
+S(x)
+=
+\{y_1,y_2,\dots\}.
+$$
+
+multiple minimizers.
+
+此時其實有兩個不同問題。
+
+## Case 1
+
+Optimal solution存在但不唯一
+
+例如
+
+$$
+g(y)=0
+$$
+
+對所有
+
+$$
+y\in[-1,1]
+$$
+
+成立。
+
+那麼
+
+$$
+S=[-1,1].
+$$
+
+optimal solution 存在。
+
+但不唯一。
+
+***
+
+這時：
+
+$$
+\psi(x)
+=
+\min_{y\in S(x)}f(x,y)
+$$
+
+仍然可能定義得很好。
+
+只是
+
+$$
+y^*(x)
+$$
+
+不再是函數。
+
+而是集合值映射(set-valued mapping)。
+
+***
+
+所以：
+
+> optimal solution 存在 ≠ hypergradient存在
+
+中間還差了一大步。
+
+***
+
+## Case 2
+
+Solution set 對 x 不連續
+
+這才是真正可怕的。
+
+例如論文 Example 1。
+
+當 x 改動極小：
+
+$$
+S(x)
+$$
+
+突然跳到另一個 minimizer。
+
+此時：
+
+$$
+\psi(x)
+$$
+
+產生尖角。
+
+甚至不可微。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+所以更準確地說：
+
+存在 optimality 並不足夠。
+
+需要：
+
+$$
+S(x)
+$$
+
+有好的 stability。
+
+***
+
+其實 Theorem 3.1 的精神可濃縮成一句：
+
+> Hypergradient 的存在，不是來自 optimal solution 存在，而是來自 solution set 的穩定移動。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+這句我覺得很重要。
+
+***
+
+# 2. 「Flat direction 必須對 perturbation 不敏感」到底是什麼意思？
+
+這是 Proposition 3.4 背後真正的幾何思想。
+
+***
+
+先看一個你熟悉的例子。
+
+$$
+g(y)=0.
+$$
+
+所有點都是 minimizer。
+
+圖像：
+
+```text
+--------------------
+```
+
+完全平。
+
+***
+
+此時
+
+$$
+S=[-10,10].
+$$
+
+任何點都是最佳解。
+
+***
+
+現在加入非常小的 perturbation：
+
+$$
+h(x,y)
+=
+xy.
+$$
+
+***
+
+若
+
+$$
+x>0
+$$
+
+最優解變成
+
+$$
+y=-10.
+$$
+
+***
+
+若
+
+$$
+x<0
+$$
+
+最優解變成
+
+$$
+y=10.
+$$
+
+***
+
+當
+
+$$
+x\to0
+$$
+
+時候：
+
+```text
+Optimal solution
+
+-10  <------->  10
+```
+
+突然跳。
+
+***
+
+這叫：
+
+solution map discontinuity.
+
+***
+
+幾何上發生什麼？
+
+原因是：
+
+原本 valley 太平。
+
+```text
+------------------
+```
+
+任何超小 perturbation
+
+都能把 minimizer 推到極遠位置。
+
+***
+
+作者的 Proposition 3.4 本質在排除這類情況。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+我喜歡把它翻譯成：
+
+> Flat direction 可以存在，但 perturbation 不可以沿這條 flat direction 有一階影響。
+
+***
+
+更數學地說：
+
+若
+
+$$
+v
+$$
+
+是 flat direction。
+
+則 perturbation induced force
+
+必須落在
+
+$$
+\operatorname{Im}(\nabla^2L)
+$$
+
+裡面。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+直覺：
+
+不是所有平坦都危險。
+
+危險的是：
+
+```text
+Flat
++
+Perturbation pushes along flat direction
+```
+
+***
+
+這時 minimizer 會瞬間跳。
+
+***
+
+對我而言，
+
+這是整篇 paper 最深刻的 insight。
+
+因為它其實在回答：
+
+> 多重最優解什麼時候仍然可以做微分？
+
+而不是：
+
+> 多重最優解什麼時候唯一化？
+
+兩者完全不同。
+
+***
+
+# 3. Goldstein Stationarity 為什麼值得研究？
+
+這是我覺得最有 PhD 味道的問題。
+
+***
+
+整篇 paper 的結果依賴：
+
+$$
+\nabla\psi(x)
+$$
+
+存在。
+
+所以才能談：
+
+$$
+\|\nabla\psi(x)\|
+\le \varepsilon.
+\]【1-3caea7】
+
+---
+
+但如果發生 Example 1 或 Example 2：
+
+\[
+\psi
+$$
+
+不可微。
+
+那麼：
+
+$$
+\nabla \psi
+$$
+
+根本不存在。 [\[fwdgroup-m...epoint.com\]](https://fwdgroup-my.sharepoint.com/personal/226231_hk_fwd_com1/Documents/Microsoft%20Copilot%20Chat%20Files/converted.md)
+
+***
+
+這時傳統 stationarity：
+
+失效。
+
+***
+
+於是現代 nonsmooth optimization 引入：
+
+## Goldstein stationarity
+
+不是問：
+
+$$
+\nabla f(x)=0?
+$$
+
+而是問：
+
+局部所有梯度平均後，
+
+是否接近零。
+
+***
+
+形式大概像：
+
+$$
+0
+\in
+\operatorname{conv}
+\{
+\nabla f(y):
+y\in B(x,\delta)
+\}
+.
+$$
+
+***
+
+意思：
+
+即使某點不可微。
+
+附近梯度資訊仍然平衡。
+
+***
+
+例如
+
+$$
+f(x)=|x|.
+$$
+
+在
+
+$$
+x=0
+$$
+
+：
+
+$$
+\nabla f
+$$
+
+不存在。
+
+***
+
+但左右側：
+
+$$
+-1
+$$
+
+和
+
+$$
+1.
+$$
+
+***
+
+凸包：
+
+$$
+[-1,1]
+$$
+
+包含
+
+$$
+0.
+$$
+
+***
+
+於是：
+
+$$
+0
+$$
+
+是 Goldstein stationary.
+
+***
+
+這比 classical stationarity 更強大。
+
+因為：
+
+### 不要求可微
+
+***
+
+回到 bilevel。
+
+若
+
+$$
+S(x)
+$$
+
+突然換 minimizer。
+
+則
+
+$$
+\psi(x)
+$$
+
+很可能變成：
+
+```text
+\/
+```
+
+尖角。
+
+***
+
+此時：
+
+$$
+\nabla \psi
+$$
+
+不存在。
+
+***
+
+但：
+
+Goldstein stationarity
+
+可能仍然有意義。
+
+***
+
+所以我認為非常自然的研究問題是：
+
+> 如果 solution set continuity 失敗，Theorem 3.1 崩潰，那能否仍然證明 penalty method 收斂到 Goldstein stationary point？
+
+***
+
+這其實是在問：
+
+```text
+Differentiable world
+       ↓
+Stationary point
+
+Nonsmooth world
+       ↓
+Goldstein stationary point
+```
+
+能否建立對應理論。
+
+***
+
+# 我認為三個問題中最有研究價值的是哪個？
+
+排名：
+
+### 第一名
+
+Goldstein stationarity
+
+因為這是目前理論真正的缺口。
+
+***
+
+### 第二名
+
+Flat direction 對 perturbation 的穩定性
+
+因為它涉及 variational analysis 與 set-valued mapping。
+
+***
+
+### 第三名
+
+Optimality 是否存在
+
+因為這其實只是起點。
+
+真正困難的不是 existence。
+
+而是：
+
+$$
+S(x)
+$$
+
+存在之後如何變化。
+
+***
+
+一句話總結：
+
+> 這篇論文最大的啟發並不是「如何求解 bilevel optimization」，而是「hypergradient 的存在其實來自 solution-set stability，而不是 optimal solution 的存在；一旦 stability 失效，下一個自然目標就應該是 Goldstein stationarity，而不是 classical stationarity。」
