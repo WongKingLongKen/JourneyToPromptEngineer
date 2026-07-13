@@ -1,0 +1,670 @@
+這篇 paper 很長（UAG → UPFAG → UAPL → UFAPL），如果全部 theorem 都逐行講會超過一本 lecture note。
+
+我會用研究生讀 paper 的方式：
+
+> 哪些 theorem 真的重要？
+>
+> 哪些只是技術延伸？
+>
+> 哪些結果值得未來做研究？
+
+***
+
+# Part A
+
+# 論文的主線到底是什麼？
+
+其實全篇只有一個核心思想：
+
+## Convex 世界
+
+Nesterov Acceleration
+
+很快。
+
+$$
+O(1/\sqrt{\varepsilon})
+$$
+
+最優。
+
+***
+
+## Nonconvex 世界
+
+Gradient Descent
+
+穩定。
+
+$$
+O(1/\varepsilon)
+$$
+
+最佳已知。
+
+***
+
+作者問：
+
+> 能不能把兩個世界揉成同一個演算法？
+
+***
+
+答案：
+
+加入
+
+$$
+\bar x_k^{ag}
+$$
+
+這個 monotone gradient step。
+
+***
+
+所以整篇 paper 的本質：
+
+```text
+Nesterov acceleration
+        +
+monotone gradient descent
+        ↓
+uniform algorithm
+```
+
+***
+
+# Part B
+
+# 所有重要 Lemma / Theorem
+
+其實只有 6 個要懂。
+
+***
+
+# Lemma 1
+
+## 內容
+
+如果
+
+$$
+\omega_k
+\le
+(1-\alpha_k)\omega_{k-1}
++
+\zeta_k
+$$
+
+則
+
+$$
+\omega_k
+\le
+\Gamma_k
+\sum_{i=1}^{k}
+\frac{\zeta_i}{\Gamma_i}.
+$$
+
+***
+
+## 它在幹嘛？
+
+本質：
+
+### Nesterov Telescope Machinery
+
+***
+
+很多 accelerated proof
+
+最後都化成：
+
+$$
+E_k
+\le
+(1-\alpha_k)E_{k-1}
++
+noise_k.
+$$
+
+***
+
+這個 lemma 提供：
+
+如何展開所有 recursion。
+
+***
+
+## 重要程度
+
+★★★★★★★★★★
+
+10/10
+
+***
+
+其實後面所有 convex proof
+
+都靠它。
+
+***
+
+# Theorem 2(a)
+
+## Nonconvex UAG
+
+得到
+
+$$
+\min_{k\le N}
+\|g_{X,k}\|^2
+\le
+\frac{
+\Psi(x_0)-\Psi^*
+}
+{\sum\beta_k(1-L\beta_k/2)}.
+$$
+
+***
+
+## 為什麼重要？
+
+這才是：
+
+nonconvex convergence guarantee
+
+***
+
+它保證：
+
+至少有一個 iterate
+
+接近 stationarity。
+
+***
+
+## 研究角度
+
+事實上：
+
+這 theorem 非常標準。
+
+***
+
+最重要並非結果。
+
+而是 proof：
+
+作者利用 monotonicity
+
+建立
+
+$$
+\Psi(x_k)
+-
+\Psi(x_{k+1})
+$$
+
+控制 projected gradient。
+
+***
+
+# Corollary 3(a)
+
+推出
+
+$$
+\|g_{X,k}\|^2
+=
+O(1/N).
+$$
+
+***
+
+換成
+
+$$
+\varepsilon
+$$
+
+就是
+
+$$
+N
+=
+O(1/\varepsilon).
+$$
+
+***
+
+## 為什麼值得注意？
+
+因為這是
+
+2015年前後
+
+nonconvex first-order benchmark。
+
+***
+
+現在看可能普通。
+
+但當年很重要。
+
+***
+
+# Theorem 2(b)
+
+## Convex UAG
+
+得到
+
+$$
+\Psi(x_N)-\Psi^*
+=
+O(1/N^2).
+$$
+
+***
+
+## 為什麼重要？
+
+就是：
+
+Nesterov rate
+
+沒有被破壞。
+
+***
+
+本來你加入 gradient descent，
+
+可能擔心 acceleration 消失。
+
+***
+
+結果：
+
+沒有。
+
+***
+
+這是整篇 paper 成功之處。
+
+***
+
+# Theorem 4
+
+## UPFAG
+
+這是我認為 paper 最重要 theorem。
+
+***
+
+因為：
+
+Theorem 2
+
+還是要求
+
+$$
+L
+$$
+
+已知。
+
+***
+
+Theorem 4
+
+直接推廣到
+
+$$
+\nu\in[0,1].
+$$
+
+***
+
+包括：
+
+### smooth
+
+$$
+\nu=1
+$$
+
+***
+
+### weakly smooth
+
+$$
+0<\nu<1
+$$
+
+***
+
+### nonsmooth convex
+
+$$
+\nu=0
+$$
+
+***
+
+這就是
+
+Universal Method
+
+思想。
+
+***
+
+## 研究價值
+
+比 Theorem 2 更高。
+
+***
+
+# Corollary 5
+
+給出 complexity。
+
+***
+
+Convex：
+
+$$
+O
+\left(
+(H/\varepsilon)^{2/(1+3\nu)}
+\right)
+$$
+
+***
+
+Nonconvex：
+
+$$
+O
+\left(
+H^{1/\nu}
+\varepsilon^{-(1+\nu)/(2\nu)}
+\right)
+$$
+
+***
+
+## 為什麼重要？
+
+直接 matching 已知理論界限。
+
+***
+
+# Theorem 7
+
+UAPL
+
+***
+
+其實是：
+
+把同樣思想
+
+移植到 bundle-level。
+
+***
+
+研究角度：
+
+沒有前面幾個重要。
+
+***
+
+# Part C
+
+# 你讀完後應有的結論
+
+如果我是你。
+
+***
+
+我的 conclusion 會是：
+
+## Conclusion 1
+
+Acceleration 並不一定只屬於 convex optimization。
+
+***
+
+以前大家會覺得：
+
+```text
+Convex
+   ↓
+Acceleration
+
+Nonconvex
+   ↓
+Gradient descent
+```
+
+***
+
+這篇打破這個想法。
+
+***
+
+## Conclusion 2
+
+Monotonicity 比 acceleration 更重要。
+
+***
+
+作者真正成功原因：
+
+不是新 momentum。
+
+***
+
+而是：
+
+$$
+\Psi(x_{k+1})
+\le
+\Psi(x_k)
+$$
+
+***
+
+這讓所有 nonconvex proof 成立。
+
+***
+
+## Conclusion 3
+
+Uniform Optimality 是一種 framework。
+
+不是單一演算法。
+
+***
+
+這是我認為 paper 最大 insight。
+
+***
+
+# Part D
+
+# 你的證據夠強嗎？
+
+我認為：
+
+## 結論1
+
+Acceleration 可延伸 nonconvex
+
+證據：
+
+Strong
+
+因為 theorem 已證明。
+
+***
+
+## 結論2
+
+Monotonicity 是成功原因
+
+證據：
+
+Medium-Strong
+
+***
+
+Fact：
+
+Theorem 2 proof
+
+直接依賴
+
+$$
+\Psi(x_k)
+$$
+
+單調下降。
+
+***
+
+Interpretation：
+
+這是核心。
+
+***
+
+但作者沒有證明：
+
+沒有 monotonicity 必失敗。
+
+***
+
+因此不是 strongest possible conclusion。
+
+***
+
+## 結論3
+
+Uniform framework 很重要
+
+證據：
+
+Strong
+
+因為：
+
+UAG
+
+UPFAG
+
+UAPL
+
+UFAPL
+
+都重複出現同樣思想。
+
+***
+
+# Part E
+
+# Briefing 後最值得問教授的問題
+
+我最推薦以下三個。
+
+***
+
+## 問題1（最推薦）
+
+這篇 paper 取得
+
+first-order stationarity：
+
+$$
+\|g_k\|^2
+\le
+\varepsilon.
+$$
+
+那麼：
+
+> 能否在同樣 framework 下得到 second-order stationarity？
+
+***
+
+原因：
+
+這篇完全沒處理 saddle point。
+
+***
+
+這是現代 nonconvex optimization 核心問題。
+
+***
+
+## 問題2
+
+Monotone step 是否必要？
+
+***
+
+即：
+
+沒有 monotone selection
+
+是否仍能得到相同 complexity？
+
+***
+
+我覺得這是 paper 最有研究味的問題。
+
+***
+
+## 問題3
+
+能否推到 bilevel optimization？
+
+***
+
+因為：
+
+你最近一直在看：
+
+* Zemkoho
+* penalty methods
+* nonconvex bilevel
+
+***
+
+很自然會問：
+
+```text
+UAG
+↓
+UPFAG
+↓
+Nonconvex Bilevel ?
+```
+
+***
+
+其實今天很多 hypergradient paper
+
+都還在用 Ghadimi-Lan 這條線。
+
+***
+
+# 如果我是教授
+
+我最想聽你會後提出這句話：
+
+> 我認為這篇 paper 最重要的貢獻並不是 O(1/\varepsilon) 或 O(1/\sqrt{\varepsilon}) 的複雜度，而是作者發現只要把 monotone gradient descent 嵌入 acceleration framework，就能在不知道問題是否 convex 的情況下得到統一理論；我想知道這個思想是否能推廣到 nonconvex bilevel optimization 或 Goldstein stationarity 的情況。
+
+如果你能提出這個觀點，我會認為你已經不是在讀 theorem，而是在開始做研究了。
